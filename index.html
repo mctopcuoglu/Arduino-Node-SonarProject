@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sonar </title>
+    <style>
+	body {
+            font-size: 10px;
+            font-family: Verdana;
+        }
+        table {
+            border-collapse: collapse;
+            width: 410px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        th {
+            border: 1px solid #555;
+            background-color: #555;
+            color: white;
+            padding: 2px;
+            font-weight: normal;
+        }
+        td {
+            border: 1px solid #999;
+            padding: 2px;
+        }
+            td:nth-child(-n+2) {
+                color: red;
+            }
+			#messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages li { padding: 5px 10px; }
+        #messages li:nth-child(odd) { background: #eee; }
+        .container {margin-top: 0px; margin-left: 0px;}
+    </style>
+</head>
+<body>
+    <div>
+        <canvas id="sonarImage" width="610" height="210"></canvas>
+        <table>
+              <!-- more -->
+        </table>
+    </div>
+
+    <div class="container">
+    <ul id="messages">mesajlar...</ul>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+
+    <link rel="stylesheet" type="text/css" hrf="http://localhost:8080/dist/jquery.jqplot.min.css" />
+    <link rel="stylesheet" type="text/css" hrf="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" />
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+
+    <script type="text/javascript">
+	
+			var maxDistance = 100;
+            var canvas, context;
+			
+			
+			
+			
+        $(document).ready(function() {
+            var socket = io();
+			
+			canvas = document.getElementById("sonarImage");
+                context = canvas.getContext("2d");
+
+                context.lineWidth = 2;
+                context.strokeStyle = '#00FF00';
+                context.fillStyle = "#000000";
+
+                context.fillRect(0, 0, canvas.width, canvas.height);
+
+                context.translate(canvas.width / 2, 0);
+                context.scale(2, 2);
+			
+			
+			var fadeSonarLines = function () {
+            var imageData = context.getImageData(0, 0, canvas.width, canvas.height),
+                pixels = imageData.data,
+                fadeStep = 1,
+                green,
+                fadedGreen;
+
+            for (var i = 0; i < pixels.length; i += 4) {
+                green = pixels[i + 1];
+
+                fadedGreen = green - fadeStep;
+                pixels[i + 1] = fadedGreen;
+            }
+
+            context.putImageData(imageData, 0, 0);
+        };
+
+		
+				var draw= function (angle, distance) {
+                    context.save();
+					
+                    context.rotate((90 - angle) * Math.PI / 180);
+                    context.beginPath();
+                    context.moveTo(0, 0);
+                    context.lineTo(0, distance || maxDistance); 
+                    context.stroke();
+
+                    context.restore();
+
+                    fadeSonarLines();
+
+				};
+            
+            socket.on('data', function(msg){ // take data with websocket communication
+                var angle = parseInt(msg.toString().split(",")[0], 10);
+           	    var distance = parseInt(msg.toString().split(",")[1], 10);
+                $('#messages').html($('<li>').text(angle+':'+distance));
+				
+/*
+                canvas = document.getElementById("sonarImage");
+                context = canvas.getContext("2d");
+
+                context.lineWidth = 2;
+                context.strokeStyle = '#00FF00';
+                context.fillStyle = "#000000";
+
+                context.fillRect(0, 0, canvas.width, canvas.height);
+
+                context.translate(canvas.width / 2, 0);
+                context.scale(2, 2);*/
+				draw(angle,distance);
+            });
+			
+            
+        });
+		
+
+
+
+    </script>
+        </div>
+</body>
+</html>
