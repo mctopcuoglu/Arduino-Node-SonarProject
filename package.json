@@ -1,0 +1,22 @@
+{
+  "name": "SONAR",
+  "description": "Arduino ve NodeJS �at�s�nda Bir Uygulama",
+  "version": "0.0.2",
+  "author": "Mahmut �a�atay TOP�UO�LU <mcatopcuoglu@gmail.com>",
+  "contributors": [
+    {
+      "name": "Alper BAYSAL",
+      "email": "borgaxxx@gmail.com"
+    }
+  ],
+  "dependencies": {
+    "express": "latest",
+    "express-generator": "^4.13.1",
+    "serialport": "latest",
+    "socket.io": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mctopcuoglu/Arduino-Node-SonarProject.git"
+  }
+}
